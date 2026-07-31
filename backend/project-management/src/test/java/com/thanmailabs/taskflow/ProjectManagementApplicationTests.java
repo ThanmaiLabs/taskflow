@@ -1,4 +1,4 @@
-package com.taskflow.project.management;
+package com.thanmailabs.taskflow;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
