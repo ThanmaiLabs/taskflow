@@ -1,4 +1,4 @@
-package com.taskflow.project.management;
+package com.thanmailabs.taskflow.common;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
