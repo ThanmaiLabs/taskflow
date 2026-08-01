@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,4 +17,6 @@ public class ErrorResponse {
     private String error;
     private String message;
     private String path;
+
+    List<ValidationError> errors;
 }

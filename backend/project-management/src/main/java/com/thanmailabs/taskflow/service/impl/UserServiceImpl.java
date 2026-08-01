@@ -7,6 +7,7 @@ import com.thanmailabs.taskflow.exception.UserAlreadyExistsException;
 import com.thanmailabs.taskflow.mapper.UserMapper;
 import com.thanmailabs.taskflow.repository.UserRepository;
 import com.thanmailabs.taskflow.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
     @Override
+    @Transactional
     public UserRegistrationResponse register(UserRegistrationRequest request) {
         String normalizedEmail = request.getEmail().trim().toLowerCase();
         Optional<User> existingUser = userRepository.findByEmail(normalizedEmail);
