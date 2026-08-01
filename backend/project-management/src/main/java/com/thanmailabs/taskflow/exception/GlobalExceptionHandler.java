@@ -1,6 +1,7 @@
 package com.thanmailabs.taskflow.exception;
 
 import com.thanmailabs.taskflow.dto.response.ErrorResponse;
+import com.thanmailabs.taskflow.dto.response.ValidationError;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,31 +10,46 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final String VALIDATION_FAILED = "Validation failed";
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex,
                                                                  HttpServletRequest request) {
-        ErrorResponse response =
-                new ErrorResponse(LocalDateTime.now(),
-                        HttpStatus.CONFLICT.value(),
-                        HttpStatus.CONFLICT.getReasonPhrase(),
-                        ex.getMessage(),
-                        request.getRequestURI());
+        ErrorResponse response = buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), request);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                       HttpServletRequest request) {
-        ErrorResponse response =
-          new ErrorResponse(LocalDateTime.now(),
-            HttpStatus.BAD_REQUEST.value(),
-            HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            ex.getMessage(),
-            request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        List<ValidationError> errors =
+                ex.getBindingResult()
+                        .getFieldErrors()
+                        .stream()
+                        .map(fieldError ->
+                                new ValidationError(
+                                        fieldError.getField(),
+                                        fieldError.getDefaultMessage()))
+                        .toList();
+        ErrorResponse response = buildErrorResponse(HttpStatus.BAD_REQUEST, VALIDATION_FAILED, request);
+        response.setErrors(errors);
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    private ErrorResponse buildErrorResponse(
+            HttpStatus status,
+            String message,
+            HttpServletRequest request) {
+        ErrorResponse response = new ErrorResponse();
+        response.setTimestamp(LocalDateTime.now());
+        response.setStatus(status.value());
+        response.setError(status.getReasonPhrase());
+        response.setPath(request.getRequestURI());
+        response.setMessage(message);
+        return response;
     }
 }
