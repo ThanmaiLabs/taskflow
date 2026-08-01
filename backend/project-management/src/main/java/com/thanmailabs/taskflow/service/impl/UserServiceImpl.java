@@ -3,6 +3,7 @@ package com.thanmailabs.taskflow.service.impl;
 import com.thanmailabs.taskflow.dto.request.UserRegistrationRequest;
 import com.thanmailabs.taskflow.dto.response.UserRegistrationResponse;
 import com.thanmailabs.taskflow.entity.User;
+import com.thanmailabs.taskflow.exception.UserAlreadyExistsException;
 import com.thanmailabs.taskflow.mapper.UserMapper;
 import com.thanmailabs.taskflow.repository.UserRepository;
 import com.thanmailabs.taskflow.service.UserService;
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService {
         String normalizedEmail = request.getEmail().trim().toLowerCase();
         Optional<User> existingUser = userRepository.findByEmail(normalizedEmail);
         if(existingUser.isPresent()) {
-            throw new IllegalArgumentException("User already exists.");
+            throw new UserAlreadyExistsException("User already exists.");
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
