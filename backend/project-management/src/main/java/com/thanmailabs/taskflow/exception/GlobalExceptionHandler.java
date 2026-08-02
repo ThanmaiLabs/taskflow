@@ -15,6 +15,7 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final String VALIDATION_FAILED = "Validation failed";
+    private static final String INVALID_CREDENTIALS = "Invalid email or password";
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex,
@@ -51,5 +52,12 @@ public class GlobalExceptionHandler {
         response.setPath(request.getRequestURI());
         response.setMessage(message);
         return response;
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException ex,
+                                                                           HttpServletRequest request) {
+        ErrorResponse response = buildErrorResponse(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS, request);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }

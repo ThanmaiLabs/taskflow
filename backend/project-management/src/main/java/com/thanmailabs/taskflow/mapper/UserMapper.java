@@ -1,7 +1,9 @@
 package com.thanmailabs.taskflow.mapper;
 
 import com.thanmailabs.taskflow.dto.request.UserRegistrationRequest;
+import com.thanmailabs.taskflow.dto.response.LoginResponse;
 import com.thanmailabs.taskflow.dto.response.UserRegistrationResponse;
+import com.thanmailabs.taskflow.dto.response.UserSummary;
 import com.thanmailabs.taskflow.entity.Address;
 import com.thanmailabs.taskflow.entity.User;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,18 @@ public class UserMapper {
         response.setLastName(user.getLastName());
         response.setEmail(user.getEmail());
         response.setId(user.getId());
+        return response;
+    }
+
+    public LoginResponse toLoginDTO(User user) {
+        LoginResponse response = new LoginResponse();
+        UserSummary userSummary = new UserSummary();
+        userSummary.setFirstName(user.getFirstName());
+        userSummary.setLastName(user.getLastName());
+        userSummary.setEmail(user.getEmail());
+        userSummary.setId(user.getId());
+
+        response.setUser(userSummary);
         return response;
     }
 }
