@@ -6,6 +6,7 @@ import com.thanmailabs.taskflow.entity.User;
 import com.thanmailabs.taskflow.exception.InvalidCredentialsException;
 import com.thanmailabs.taskflow.mapper.UserMapper;
 import com.thanmailabs.taskflow.repository.UserRepository;
+import com.thanmailabs.taskflow.service.JwtService;
 import com.thanmailabs.taskflow.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final JwtService jwtService;
     @Override
     public LoginResponse login(LoginRequest request) {
         String normalizedEmail = request.getEmail().trim().toLowerCase();
@@ -32,7 +34,8 @@ public class LoginServiceImpl implements LoginService {
         }
 
         LoginResponse response = userMapper.toLoginDTO(user);
-        response.setAccessToken(JWT_PLACEHOLDER);
+        String token = jwtService.generateAccessToken(user);
+        response.setAccessToken(token);
         return response;
     }
 }

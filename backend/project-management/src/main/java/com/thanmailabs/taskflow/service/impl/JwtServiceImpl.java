@@ -3,8 +3,11 @@ package com.thanmailabs.taskflow.service.impl;
 import com.thanmailabs.taskflow.entity.User;
 import com.thanmailabs.taskflow.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,8 @@ import java.util.Date;
 
 @Service
 @ConfigurationProperties(prefix = "jwt")
+@Getter
+@Setter
 public class JwtServiceImpl implements JwtService {
     private String secret;
     private long expiration;
@@ -55,6 +60,11 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public boolean isValidAccessToken(String token) {
-        return false;
+        try {
+            extractClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException ex) {
+            return false;
+        }
     }
 }
